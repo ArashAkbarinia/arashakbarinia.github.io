@@ -1,1 +1,1538 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title>deepucs | Arash Akbarinia</title> <meta name="author" content="Arash Akbarinia"> <meta name="description" content="Deep Pursuit of Perceptually Uniform Colour Space"> <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website"> <link rel="stylesheet" href="/assets/css/bootstrap.min.css?a4b3f509e79c54a512b890d73235ef04"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.css"> <link rel="stylesheet" href="/assets/css/academicons.min.css?f0b7046b84e425c55f3463ac249818f5"> <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons"> <link rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?19f3075a2d19613090fe9e16b564e1fe" media="" id="highlight_theme_light"> <link href="/assets/css/bootstrap-toc.min.css?6f5af0bb9aab25d79b2448143cbeaa88" rel="stylesheet"> <link rel="shortcut icon" href="/assets/img/icon.png?274ed9d8a732b37007d623661d10e00b"> <link rel="stylesheet" href="/assets/css/main.css?d41d8cd98f00b204e9800998ecf8427e"> <link rel="canonical" href="https://arashakbarinia.github.io/projects/deepucs/"> <link rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?e74e74bf055e5729d44a7d031a5ca6a5" media="none" id="highlight_theme_dark"> <script src="/assets/js/theme.js?96d6b3e1c3604aca8b6134c7afdd5db6"></script> <script src="/assets/js/dark_mode.js?9b17307bb950ffa2e34be0227f53558f"></script> </head> <body class="fixed-top-nav "> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Arash </span>Akbarinia</a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about</a> </li> <li class="nav-item "> <a class="nav-link" href="/publications/">publications</a> </li> <li class="nav-item "> <a class="nav-link" href="/projects/">projects</a> </li> <li class="nav-item "> <a class="nav-link" href="/repositories/">repositories</a> </li> <li class="nav-item "> <a class="nav-link" href="/teaching/">teaching</a> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fas fa-moon"></i> <i class="fas fa-sun"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="container mt-5"> <div class="row"> <div class="col-sm-3"> <nav id="toc-sidebar" class="sticky-top"></nav> </div> <div class="col-sm-9"> <div class="post"> <header class="post-header"> <h1 class="post-title">deepucs</h1> <p class="post-description">Deep Pursuit of Perceptually Uniform Colour Space</p> </header> <article> <h1 id="abstract">Abstract</h1> <p>Our colour perception diverges from objective photometric measurements in several aspects. One prominent example is the colour difference between two surfaces. Despite numerous attempts, no colour spaces are genuinely perceptually uniform, i.e., a perfect match between the spatial distance of two colours and the perceived colour difference. Here, we put forward a novel approach by utilising deep neural networks (DNNs) to tackle this challenge. We train a linear classifier on top of frozen pretrained networks to perform a colour discrimination odd-one-out task. Next, we measure the networks’ sensitivity threshold for several RGB points in multiple directions. The pattern of networks’ discrimination thresholds highly resembles human sensitivity, e.g., higher sensitivity to hue than chroma. Next, we train a shallow neural network to transfer the RGB space into a new space with a homogenous Euclidean distance for all measured sensitivity thresholds. Our evaluation of this deep colour space on several human data suggests this framework can potentially lead us to find a perceptually uniform colour space.</p> <p align="center"> <a href="https://github.com/ArashAkbarinia/DeepTHS" rel="external nofollow noopener" target="_blank"><img src="https://github.com/ArashAkbarinia/arashakbarinia.github.io/blob/master/assets/img/github_icon.png?raw=true" alt="Source Code" style="height:100px;"></a> <a href="https://colab.research.google.com/github/ArashAkbarinia/arashakbarinia.github.io/blob/master/notebooks/DeepPursuitOfPerceptuallyUniformColourSpace.ipynb" rel="external nofollow noopener" target="_blank"><img src="https://github.com/ArashAkbarinia/arashakbarinia.github.io/blob/master/assets/img/colab_icon.png?raw=true" alt="Notebook" style="height:100px;"></a> </p> <h1 id="colour-spaces">Colour spaces</h1> <p>A colour space is an arbitrary definition of colours’ organisation in space. Since human colour vision starts with three types of cone photoreceptors, most (if not all) colour spaces are defined in three-dimensional space. In theory, an infinite number of colour spaces could be formulated, and indeed several exist in the literature and industry. RGB is the standard in digital photography, and consequently widely used in machine vision.</p> <h2 id="rgb">RGB</h2> <p>RGB represents colours by three additive primaries in a cubic shape. The corresponding colours for all eight corners of the cube are illustrated below. In the presence of only one primary, we obtain <em>red</em>, <em>green</em> and <em>blue</em> colours. A combination of two of the primaries results in <em>yellow</em>, <em>purple</em> and <em>cyan</em> colours. Finally, the presence and absence of all primaries produce <em>white</em> and <em>black</em>, respectively.</p> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_21_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_21_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_21_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_21_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <p>We uniformly sample one thousand points from this space and use it to visually compare different colour spaces. We plot such data in four inserts:</p> <ul> <li>The leftmost insert is a 3D illustration of sampled points.</li> <li>The other three inserts show the same points in 2D planes.</li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_24_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_24_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_24_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_24_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <p>In the visualisation above, several points lie exacly on top of each other, therefore, it might be more informative to inspect plane slices of the space without any points overlapping:</p> <ul> <li>Coronal: where <em>R</em> is constant.</li> <li>Sagittal: where <em>G</em> is constant.</li> <li>Transverse: where <em>B</em> is constant.</li> </ul> <h3 id="coronal-plane">Coronal plane</h3> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_26_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_26_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_26_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_26_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="sagittal-plane">Sagittal plane</h3> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_28_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_28_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_28_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_28_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="transverse-plane">Transverse plane</h3> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_30_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_30_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_30_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_30_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h2 id="other-colour-spaces">Other colour spaces</h2> <p>Let’s look at a few other popular colour spaces to obtain a different view of how colour can be structured in the space. We convert the entire RGB gamut (all the one-thousand RGB points) into different colour spaces.</p> <h3 id="dkl">DKL</h3> <p>The DKL colour space (Derrington-Krauskopf-Lennie) models the opponent responses of rhesus monkeys in the early visual system:</p> <ul> <li>It transforms the RGB by a \(3 \times 3\) matrix (i.e., rotation, shearing, scaling and reflection).</li> <li>The axes approximately correspond to luminance, red-cyan, and yellow-blue channels.</li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_33_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_33_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_33_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_33_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="ycc">YCC</h3> <p>The YCC (also known as \(YC_oC_g\) or \(YC_1C_2\)) decorrelates the RGB channels by a fast computation:</p> <ul> <li>It uses a \(3 \times 3\) transformation matrix whose coefficients are simple binary fractions.</li> <li>The axes approximately correspond to luminance, orange-blue, and green-violet channels.</li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_35_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_35_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_35_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_35_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="hsv">HSV</h3> <p>The HSV colour space (hue, saturation, and value) is a cylindrical representation of the RGB cube designed by computer graphics:</p> <ul> <li>The white and black points are set as the origins of the top and bottom bases of the cylinder.</li> <li>The transformation forces the RGBCMY into a plane to obtain a circular hue.</li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_37_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_37_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_37_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_37_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="cie-lab">CIE Lab</h3> <p>The CIE Lab colour space (luminance, red-green and yellow-blue axes) intends to be perceptually uniform:</p> <ul> <li>The transformation consists of going into the XYZ space by linearising relative to a <em>white point</em>.</li> <li>The luminance channel is effectively a power curve with an exponent of \(\approx 0.43\).</li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_39_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_39_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_39_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_39_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h1 id="colour-difference">Colour difference</h1> <p>A colour space is perceptually uniform if the spatial distances between two colours in that space perfectly match the colour difference humans perceive.</p> <h2 id="human-data">Human-data</h2> <p>Several studies have measured colour discrimination threshold and colour differences of human visual system. We rely on the following data:</p> <ol> <li>MacAdam ellipses (1942)</li> <li>Luo-Rigg ellipses (1986)</li> <li>MacAdam colour difference (1974)</li> </ol> <h3 id="macadam-ellipses">MacAdam Ellipses</h3> <p>The idea behind MacAdam ellipses is that within each ellipse, colours are indiscriminate to human eyes. `</p> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_44_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_44_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_44_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_44_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="luo-rigg-ellipses">Luo-Rigg Ellipses</h3> <p>The idea behind Luo-Rigg ellipses is similar to MacAdam ellipses. However, contrary to the MacAdam Luo-Rigg ellipses have different luminance \(Y\) values.</p> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_46_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_46_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_46_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_46_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="macadam-1974">MacAdam 1974</h3> <p>The lines from each point towards different direction indicates the relative magnitudes of colour difference.</p> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_48_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_48_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_48_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_48_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="quantifying-goodness">Quantifying goodness</h3> <ol> <li> <p><strong>Colour discrimination data</strong>:</p> <p>To quantify <strong>uniformity</strong> of a colour space, we rely on standard deviation (\(\sigma\)) among measured sensitivity thresholds. The figure below depicts the Euclidean distance in RGB colour space for a set of measured points. In a perceptually uniform colour space, all these distances should have an identical length, therefore:</p> <ul> <li>A small standard deviation indicates greater uniformity.</li> <li>A large standard deviation indicates nonuniformity.</li> </ul> <p>It is important to note that the absolute distance that determines the sensitivity does not determine the uniformity.</p> <p>Naturally, the standard deviation depends on the absolute values. Therefore, when comparing different colour spaces, we ensure the space is normalised to the range from 0 to 1.</p> </li> <li> <p><strong>Colour difference data</strong></p> <p>We use the correlation coefficient (\(r\)) to quantify how much a colour space predicts human colour difference data such as MacAdam 1974.</p> </li> </ol> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_50_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_50_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_50_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_50_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h2 id="metrics">Metrics</h2> <p>To better explain the problem, we have sampled three orthogonal planes from the RGB space. Next, we will draw lines between all pairs of neighbouring points according to difference colour difference metrics. <strong>The line’s length indicates the distance between the points</strong>:</p> <ul> <li> <em>Longer</em> lines denote bigger colour differences.</li> <li> <em>Shorter</em> lines denote smaller colour differences.</li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_52_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_52_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_52_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_52_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="euclidean-distance">Euclidean distance</h3> <p>In the figure below, we have used the Euclidean distance in RGB colour space as our colour difference metric. Naturally, since sampled points were drawn from a uniform distribution in RGB, the distance between all neighbouring points is identical as depicted by lines. However, we know that RGB does not capture the perceive colour difference.</p> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_55_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_55_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_55_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_55_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="delta-e2000">\(\Delta E2000\)</h3> <p>CIELab colour space was designed to capture the perceived colour difference better. Since the Euclidean distance in CIELab did not adequately resolve the perceptual uniformity issue, the CIE refined their definition and introduced \(\Delta E2000\) which is widely used as the colour difference metric. The figure below depicts the \(\Delta E2000\) distance between neighbouring points.</p> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_58_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_58_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_58_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_58_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="predicting-human-data">Predicting human data</h3> <p>The figure below compares the prediction power of different colour metrics. The</p> <ul> <li>Euclidean distance across different colour spaces (RGB, YCC, DKL, Lab) results in a similar prediction.</li> <li>\(\Delta E2000\) performs better than any of the Euclidean distances.</li> </ul> <p>Although \(\Delta E2000\) is one of the best available colour difference metrics, it has the following limitations:</p> <ol> <li>It does not fully match the human perceptual distances.</li> <li>It is not a space but a non-Euclidean distance.</li> </ol> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_60_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_60_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_60_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_60_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h1 id="colour-discrimination-in-deep-networks">Colour discrimination in deep networks</h1> <p>It is impossible to directly ask a neural network trained on a task like object recognition about colour discrimination, as the neural network was specifically trained for another task. To overcome this, we trained a linear classifier to perform a 4AFC colour discrimination task, and at test time systematically measured the network’s sensitivity at different points. That is to say, the framework to evaluate the colour discrimination thresholds in deep networks consists of two steps:</p> <ol> <li>A network is trained on an arbitrary visual task (e.g., object recognition). We refer to such a network as a <strong>pretrained network</strong>.</li> <li>Features extracted from the <strong>frozen</strong> pretrained network are input to a linear classifier trained for the colour discrimination 4AFC task. We refer to the trained linear classifier as a <strong>colour-discriminator</strong>.</li> </ol> <h2 id="training-colour-discriminator">Training colour discriminator</h2> <p>The figure below shows the schematics of our training process.</p> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepReconciliationOfCategoricalColourPerception/colour_discriminator-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepReconciliationOfCategoricalColourPerception/colour_discriminator-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepReconciliationOfCategoricalColourPerception/colour_discriminator-1400.webp"></source> <img src="/assets/img/DeepReconciliationOfCategoricalColourPerception/colour_discriminator.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <p>The process of extracting features (also known as, readouts) from a pretrained network can occur at any depth of a network. We extract features from six distinct layers from the early to final layer:</p> <ul> <li>Common to all architectures: <code class="language-plaintext highlighter-rouge">fc</code> for <em>ImageNet</em> (classification layer) or <code class="language-plaintext highlighter-rouge">encoder</code> for <em>Taskonomy</em> (the final encoding layer) and <em>CLIP</em> (the final vision layer).</li> <li>In the case of <code class="language-plaintext highlighter-rouge">ResNet50</code> architecture, from 5 intermediate areas (a collection of residual blocks).</li> <li>In the case of <code class="language-plaintext highlighter-rouge">ViT-B32</code> from blocks <code class="language-plaintext highlighter-rouge">[1, 4, 7, 10, 11]</code>.</li> </ul> <h3 id="train-images">Train images</h3> <p>During the training, the linear classifier is input with four images:</p> <ul> <li>Three of those are identical.</li> <li>One odd image that only differs in colour.</li> </ul> <p>The colour difference between common-odd images is drawn from a random uniform distribution ensuring no colour bias is introduced in the colour discriminator training.</p> <p>The background colour is always achromatic whose luminance is drawn from a random uniform distribution</p> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_64_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_64_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_64_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_64_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h2 id="testing-paradigm">Testing paradigm</h2> <p>To estimate networks’ colour sensitivity thresholds, we followed the standard staircase procedure to adjust the colour of the odd-one-out item until the network’s accuracy reached \(62.5 \%\). At each trial, this accuracy is computed over 2905 shapes. The figure below illustrates a real example of the staircase procedure.</p> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_66_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_66_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_66_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_66_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h2 id="pretrained-networks">Pretrained networks</h2> <p>Architectures:</p> <ul> <li> <strong>Vision Transformers (ViT)</strong> – <em>ViT-B32</em> </li> <li> <strong>Convolutional Neural Networks (CNN)</strong> – <em>ResNet50</em> </li> </ul> <p>Pretrained task:</p> <ul> <li> <strong>CLIP</strong>: multimodal text-image matching</li> <li> <strong>ImageNet</strong>: unimodal object classification</li> </ul> <p>Intermediate layers: six distinct layers corresponding to low-, mid- and high-level visual representation.</p> <h2 id="test-points">Test Points</h2> <p>We sampled the RGB space uniformly with steps of \(0.25\). This results in 125 test points, which are illustrated in the figure below.</p> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_71_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_71_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_71_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_71_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <p>From each test point, we computed the sensitivity towards the outer surface of the RGB cube. An example of this is illustrated in the figure below.</p> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_73_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_73_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_73_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_73_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h1 id="results">Results</h1> <p>For each pretrained network we trained five instances of linear classifier. The results across these five instances are identical, therefore in this notebook we report the results only for one instance.</p> <h2 id="explaining-with-one-example">Explaining with one example</h2> <p>We will look at the results of <em>Block-7</em> of the <em>ViT-B32</em> architecture (i.e., the image encoder of CLIP). The directory name <code class="language-plaintext highlighter-rouge">bg128_i0</code> means the linear classifier (colour discriminator) has been trained with images of a grey background (\(R=G=B=127\)).</p> <h3 id="raw-sensitivity-thresholds">Raw sensitivity thresholds</h3> <p>In the figure below, we have visualised the sensitivity threshold for <strong>125 test points</strong> summing to a total of <strong>3152 comparisons</strong>. The inserts are sorted following the standard deviation in sensitivity thresholds for the test colours. In each insert, the square marker indicates the test colour whose RGB coordinates are also written in the title. All circles correspond to the sensitivity threshold in different directions.</p> <p>We can observe:</p> <ul> <li>Some of the point clouds are very small while others spread.</li> <li>If RGB were the perceptually uniform space for this layer, we would see equal-sized point clouds for all test points.</li> <li>This nonuniformity suggests more sensitivity at certain parts of the colour space is useful for the pretrained task.</li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_78_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_78_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_78_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_78_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="quantifying-uniformity">Quantifying uniformity</h3> <p>We can compute the uniformity metric (standard deviation among distances) for different colour spaces and colour difference metrics. Overall, we can see the values of \(\sigma\) are small across colour spaces:</p> <ul> <li>Smaller standard deviation in YCC and DKL colour space in comparison to RGB suggests these colour spaces are perceptually more uniform for this layer.</li> <li>\(\Delta E\) of 2.56 is slightly above JND, suggesting the network’s colour sensitivity is not far away from humans.</li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_81_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_81_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_81_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_81_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h2 id="the-role-of-architecture">The role of architecture</h2> <p>Plotting the sensitivity thresholds for all 125 test points across six readout layers results in too big of a figure. But to showcase the differences across layers (from early- to mid- and deep layers) we illustrate the sensitivity thresholds for all eight corners of the RGB cube.</p> <h3 id="clip---vit-b32">CLIP - ViT-B32</h3> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_86_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_86_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_86_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_86_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_87_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_87_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_87_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_87_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="clip---resnet50">CLIP - ResNet50</h3> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_90_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_90_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_90_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_90_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_91_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_91_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_91_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_91_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="imagenet---vit-b32">ImageNet - ViT-B32</h3> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_94_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_94_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_94_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_94_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_95_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_95_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_95_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_95_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="imagenet---resnet50">ImageNet - ResNet50</h3> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_98_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_98_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_98_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_98_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_99_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_99_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_99_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_99_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="transformer-vs-convolution-networks">Transformer vs. Convolution Networks</h3> <p>The figure below compares the colour sensitivity of networks in a confusion matrix style like across two tasks and two architectures:</p> <ul> <li>There is no significant difference between columns one and two, suggesting that language does not crucially impact the network’s colour sensitivity thresholds.</li> <li>A large difference can be observed between the first and second rows, suggesting a strong role of the network’s architecture in the network’s colour sensitivity thresholds. <strong>Vison Transformers (ViT) obtain considerably lower \(\Delta E2000\)s, which suggests they capture human sensitivity better than convolutional networks.</strong> </li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_101_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_101_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_101_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_101_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h1 id="optimising-a-uniform-space">Optimising a uniform space</h1> <p>Now that we have measured a large set of sensitivity thresholds for a network/layer, we can use optimisation techniques to transform the input space (RGB, i.e., the input space of all examined pretrained networks is RGB) to a new space (we refer to it as <em>network-space</em>), where the standard deviation in the Euclidean distance of all measured distances equals zero (\(\sigma_{network-space}=0)\).</p> <p>There are at least two good candidates to perform this optimisation:</p> <ol> <li> <strong>Classical minimisation</strong>: defining the type of transformation (e.g., \(3 \times 3\) matrix or affine transformation, with or without exponential factor and certain nonlinearities.</li> <li> <strong>Neural networks</strong>: deciding a neural network (i.e., set of linear and nonlinear layers) to find the optimal solution.</li> </ol> <p>The benefit of the “classical minimisation” approach is that the inverse operation is given. However, it is limited to a design envisaged by us, therefore perhaps not finding the true uniform space. The benefit of the “neural networks” approach is its flexibility in finding an optimal solution. The drawback is that the inverse to RGB is not given and must be approximated.</p> <h2 id="neural-networks">Neural networks</h2> <p>We can train a simple neural network with a few hidden (intermediate) layers to transform RGB input space to output network-space. An example of such a network is depicted in the figure below:</p> <ul> <li>This is not a schematic illustration and the number of nodes corresponds to a real scenario.</li> <li>The neural networks trained to find the uniform colour space are shallow with a few hundred parameters.</li> <li>All layers are fully-connected (also known as linear or dense layer), where all input nodes are connected to all output nodes.</li> <li>Between any two dense layers, there is a nonlinear activation function.</li> </ul> <p>We can perform a hyperparameter search about:</p> <ul> <li>The number of hidden layers.</li> <li>The number of units in each layer.</li> <li>The type of nonlinearity function at each layer.</li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_104_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_104_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_104_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_104_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <h3 id="training">Training</h3> <p>We train our <em>perceptually uniform colour space network</em> (<strong>PucsNet</strong>) with following settings:</p> <ul> <li>0.1 learning rate, which is reduced by one order of magnitude at every one-third of total epochs.</li> <li>5000 epochs</li> <li>At every epoch, PucsNet transfers 3152 RGB points into the new space.</li> <li>The main term in the loss function is the uniformity metric (i.e., standard deviation among all measured distances). However, without any further constraint, the first solution the network finds is to make the data range tiny, which is not a valid solution. Therefore, we add a second term to our loss function to ensure the output range is approximately 0 to 1.</li> </ul> <h3 id="pucsnets">PucsNets</h3> <p>The optimisation explained above might end up in an infinite number of spaces all reaching the minimum loss function. Let us have a look at a few instances of PucsNets that we have trained and discuss the results.</p> <p>We report the network training evolution with the following figure:</p> <ul> <li>The evolution of loss as a function of number of epochs.</li> <li>The prediction of human colour discrimination ellipses (i.e., MacAdam 1942 and Luo-Rigg 1986).</li> <li>The prediction of human colour difference (i.e., MacAdam 1974).</li> <li>Visualisation of all RGB points into the new network-space.</li> </ul> <p>The instance below contains two hidden layers of each 8 units:</p> <ul> <li>The loss function although noisy steadily drops as we progress in the number of epochs. Note that the first peak at epoch 0 is because the first solution the network finds is to shrink the space range, but afterwards, it should satisfy the second constraint that brings the range of output to the range of 0 to 1.</li> <li>Network predicts human ellipses better than \(\Delta E2000\) (compare solid to dashed lines: lower values indicate more uniform space). However, it is also important to note that the prediction power of the network does not change as a function of epochs, suggesting that the initial weights make a significant impact.</li> <li>Network predicts human colour differences data equally good as \(\Delta E2000\). It is important to note that PucsNet is only trained with pretrained colour discrimination thresholds, the fact that it obtains decent results in colour difference (a similar but different paradigm) suggests the newfound space is indeed capturing other aspects of human colour vision.</li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_1-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_1-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_1-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <p>The instance below contains two hidden layers of 8 and 9 units:</p> <ul> <li>Quantitatively the obtained results are very similar to the instance above.</li> <li>However, qualitatively the new space looks quite different from the instance above.</li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_1-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_1-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_1-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <p>The instance below contains three hidden layers of 7, 14 and 9 units:</p> <ul> <li>Again we observe comparable quantitative results as above but with a different representation of colours.</li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_1-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_1-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_1-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> <p><strong>It is important to emphasise that no human data has been used in any part of network training</strong>, therefore the fact that they predict human data equally or better than state-of-the-art \(\Delta E2000\) suggests great potential in using pretrained networks to obtain a perceptually uniform colour space. We can further explore the flexibility of training these networks to create a perceptually uniform colour space under different conditions, such as illumination and background.</p> <h1 id="discussion">Discussion</h1> <ul> <li>Colour discrimination thresholds in pretrained networks highly resembles human sensitivity.</li> <li>Network architecture is influential: in comparison to convolution networks, <strong>vision transformers</strong> explain better human data.</li> <li>Artificial deep networks offer a <strong>novel framework</strong> to create a <strong>perceptually uniform colour space</strong>.</li> </ul> <div class="row"> <div class="col-sm mt-3 mt-md-0"> <figure> <picture> <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_119_0-480.webp"></source> <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_119_0-800.webp"></source> <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_119_0-1400.webp"></source> <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_119_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();"> </picture> </figure> </div> </div> </article> </div> </div> </div> </div> <footer class="fixed-bottom"> <div class="container mt-0"> © Copyright 2025 Arash Akbarinia. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. </div> </footer> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script src="/assets/js/bootstrap.bundle.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@4/imagesloaded.pkgd.min.js"></script> <script defer src="/assets/js/masonry.js" type="text/javascript"></script> <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script> <script defer src="/assets/js/zoom.js?7b30caa5023af4af8408a472dc4e1ebb"></script> <script defer src="/assets/js/bootstrap-toc.min.js?c82ff4de8b0955d6ff14f5b05eed7eb6"></script> <script defer src="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.js"></script> <script src="/assets/js/no_defer.js?d633890033921b33e0ceb13d22340a9c"></script> <script defer src="/assets/js/common.js?acdb9690d7641b2f8d40529018c71a01"></script> <script defer src="/assets/js/copy_code.js?c9d9dd48933de3831b3ee5ec9c209cac" type="text/javascript"></script> <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script> <script async src="https://badge.dimensions.ai/badge.js"></script> <script type="text/javascript">window.MathJax={tex:{tags:"ams"}};</script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script> <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script> <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9Z86194JJ"></script> <script>function gtag(){window.dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-F9Z86194JJ");</script> <script type="text/javascript">function progressBarSetup(){"max"in document.createElement("progress")?(initializeProgressElement(),$(document).on("scroll",function(){progressBar.attr({value:getCurrentScrollPosition()})}),$(window).on("resize",initializeProgressElement)):(resizeProgressBar(),$(document).on("scroll",resizeProgressBar),$(window).on("resize",resizeProgressBar))}function getCurrentScrollPosition(){return $(window).scrollTop()}function initializeProgressElement(){let e=$("#navbar").outerHeight(!0);$("body").css({"padding-top":e}),$("progress-container").css({"padding-top":e}),progressBar.css({top:e}),progressBar.attr({max:getDistanceToScroll(),value:getCurrentScrollPosition()})}function getDistanceToScroll(){return $(document).height()-$(window).height()}function resizeProgressBar(){progressBar.css({width:getWidthPercentage()+"%"})}function getWidthPercentage(){return getCurrentScrollPosition()/getDistanceToScroll()*100}const progressBar=$("#progress");window.onload=function(){setTimeout(progressBarSetup,50)};</script> </body> </html>
+<!DOCTYPE html>
+<html lang="en">
+
+  <!-- Head -->
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+
+    <!-- Standard metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>deepucs | Arash  Akbarinia</title>
+    <meta name="author" content="Arash  Akbarinia">
+    <meta name="description" content="Deep Pursuit of Perceptually Uniform Colour Space">
+    <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
+
+
+    <!-- Bootstrap & MDB -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css?a4b3f509e79c54a512b890d73235ef04">
+    <!-- <link rel="stylesheet" href="/assets/css/mdb.min.css?62a43d1430ddb46fc4886f9d0e3b49b8"> -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Bootstrap Table -->
+    <link defer rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="/assets/css/academicons.min.css?f0b7046b84e425c55f3463ac249818f5">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?19f3075a2d19613090fe9e16b564e1fe" media="" id="highlight_theme_light">
+
+    
+    <!-- Sidebar Table of Contents -->
+    <link href="/assets/css/bootstrap-toc.min.css?6f5af0bb9aab25d79b2448143cbeaa88" rel="stylesheet">
+    
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="/assets/img/icon.png?274ed9d8a732b37007d623661d10e00b">
+    
+    <link rel="stylesheet" href="/assets/css/main.css?d41d8cd98f00b204e9800998ecf8427e">
+    <link rel="canonical" href="https://arashakbarinia.github.io/projects/deepucs/">
+
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?e74e74bf055e5729d44a7d031a5ca6a5" media="none" id="highlight_theme_dark">
+    <script src="/assets/js/theme.js?96d6b3e1c3604aca8b6134c7afdd5db6"></script>
+    <script src="/assets/js/dark_mode.js?9b17307bb950ffa2e34be0227f53558f"></script>
+    
+
+  </head>
+
+  <!-- Body -->
+  <body class="fixed-top-nav ">
+
+    <!-- Header -->
+    <header>
+
+      <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+        <div class="container">
+          <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Arash </span>Akbarinia</a>
+          <!-- Navbar Toggle -->
+          <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar top-bar"></span>
+            <span class="icon-bar middle-bar"></span>
+            <span class="icon-bar bottom-bar"></span>
+          </button>
+
+          <div class="collapse navbar-collapse text-right" id="navbarNav">
+            <ul class="navbar-nav ml-auto flex-nowrap">
+
+              <!-- About -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/">about</a>
+              </li>
+              
+
+              <!-- Other pages -->
+              <li class="nav-item ">
+                <a class="nav-link" href="/publications/">publications</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/projects/">projects</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/repositories/">repositories</a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="/teaching/">teaching</a>
+              </li>
+
+              <!-- Toogle theme mode -->
+              <li class="toggle-container">
+                <button id="light-toggle" title="Change theme">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Scrolling Progress Bar -->
+      <progress id="progress" value="0">
+        <div class="progress-container">
+          <span class="progress-bar"></span>
+        </div>
+      </progress>
+    </header>
+
+
+    <!-- Content -->
+    <div class="container mt-5">
+      
+        
+        <div class="row">
+          <!-- sidebar, which will move to the top on a small screen -->
+          <div class="col-sm-3">
+            <nav id="toc-sidebar" class="sticky-top"></nav>
+          </div>
+          <!-- main content area -->
+          <div class="col-sm-9">
+            <!-- page.html -->
+<div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">deepucs</h1>
+    <p class="post-description">Deep Pursuit of Perceptually Uniform Colour Space</p>
+  </header>
+
+  <article>
+    <h1 id="abstract">Abstract</h1>
+
+<p>Our colour perception diverges from objective photometric measurements in several aspects. One
+prominent example is the colour difference between two surfaces. Despite numerous attempts, no
+colour spaces are genuinely perceptually uniform, i.e., a perfect match between the spatial
+distance of two colours and the perceived colour difference. Here, we put forward a novel
+approach by utilising deep neural networks (DNNs) to tackle this challenge. We train a linear
+classifier on top of frozen pretrained networks to perform a colour discrimination odd-one-out
+task. Next, we measure the networks’ sensitivity threshold for several RGB points in multiple
+directions. The pattern of networks’ discrimination thresholds highly resembles human
+sensitivity, e.g., higher sensitivity to hue than chroma. Next, we train a shallow neural network
+to transfer the RGB space into a new space with a homogenous Euclidean distance for all measured
+sensitivity thresholds. Our evaluation of this deep colour space on several human data suggests
+this framework can potentially lead us to find a perceptually uniform colour space.</p>
+
+<p align="center">
+<a href="https://github.com/ArashAkbarinia/DeepTHS" rel="external nofollow noopener" target="_blank"><img src="https://github.com/ArashAkbarinia/arashakbarinia.github.io/blob/master/assets/img/github_icon.png?raw=true" alt="Source Code" style="height:100px;"></a>
+<a href="https://colab.research.google.com/github/ArashAkbarinia/arashakbarinia.github.io/blob/master/notebooks/DeepPursuitOfPerceptuallyUniformColourSpace.ipynb" rel="external nofollow noopener" target="_blank"><img src="https://github.com/ArashAkbarinia/arashakbarinia.github.io/blob/master/assets/img/colab_icon.png?raw=true" alt="Notebook" style="height:100px;"></a>
+</p>
+
+<h1 id="colour-spaces">Colour spaces</h1>
+
+<p>A colour space is an arbitrary definition of colours’ organisation in space. Since human
+colour vision starts with three types of cone photoreceptors, most (if not all) colour spaces are 
+defined in three-dimensional space. In theory, an infinite number of colour spaces could be 
+formulated, and indeed several exist in the literature and industry. RGB is the standard 
+in digital photography, and consequently widely used in machine vision.</p>
+
+<h2 id="rgb">RGB</h2>
+
+<p>RGB represents colours by three additive primaries in a cubic shape. The corresponding colours
+for all eight corners of the cube are illustrated below. In the presence of only one primary,
+we obtain <em>red</em>, <em>green</em> and <em>blue</em> colours. A combination of two of the primaries results in
+<em>yellow</em>, <em>purple</em> and <em>cyan</em> colours. Finally, the presence and absence  of all primaries 
+produce <em>white</em> and <em>black</em>, respectively.</p>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_21_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_21_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_21_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_21_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<p>We uniformly sample one thousand points from this space and use it to visually compare different
+colour spaces. We plot such data in four inserts:</p>
+<ul>
+  <li>The leftmost insert is a 3D illustration of sampled points.</li>
+  <li>The other three inserts show the same points in 2D planes.</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_24_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_24_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_24_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_24_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<p>In the visualisation above, several points lie exacly on top of each other, therefore,
+it might be more informative to inspect plane slices of the space without any points overlapping:</p>
+<ul>
+  <li>Coronal: where <em>R</em> is constant.</li>
+  <li>Sagittal: where <em>G</em> is constant.</li>
+  <li>Transverse: where <em>B</em> is constant.</li>
+</ul>
+
+<h3 id="coronal-plane">Coronal plane</h3>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_26_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_26_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_26_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_26_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="sagittal-plane">Sagittal plane</h3>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_28_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_28_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_28_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_28_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="transverse-plane">Transverse plane</h3>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_30_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_30_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_30_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_30_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h2 id="other-colour-spaces">Other colour spaces</h2>
+
+<p>Let’s look at a few other popular colour spaces to obtain a different view of how colour
+can be structured in the space. We convert the entire RGB gamut (all the one-thousand RGB points)
+into different colour spaces.</p>
+
+<h3 id="dkl">DKL</h3>
+
+<p>The DKL colour space (Derrington-Krauskopf-Lennie) models the opponent responses of rhesus 
+monkeys in the early visual system:</p>
+<ul>
+  <li>It transforms the RGB by a \(3 \times 3\) matrix (i.e., rotation, shearing, scaling and reflection).</li>
+  <li>The axes approximately correspond to luminance, red-cyan, and yellow-blue channels.</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_33_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_33_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_33_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_33_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="ycc">YCC</h3>
+
+<p>The YCC (also known as \(YC_oC_g\) or \(YC_1C_2\)) decorrelates the RGB channels by a fast computation:</p>
+<ul>
+  <li>It uses a \(3 \times 3\) transformation matrix whose coefficients are simple binary fractions.</li>
+  <li>The axes approximately correspond to luminance, orange-blue, and green-violet channels.</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_35_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_35_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_35_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_35_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="hsv">HSV</h3>
+
+<p>The HSV colour space (hue, saturation, and value) is a cylindrical representation of the RGB 
+cube designed by computer graphics:</p>
+<ul>
+  <li>The white and black points are set as the origins of the top and bottom bases of the cylinder.</li>
+  <li>The transformation forces the RGBCMY into a plane to obtain a circular hue.</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_37_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_37_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_37_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_37_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="cie-lab">CIE Lab</h3>
+
+<p>The CIE Lab colour space (luminance, red-green and yellow-blue axes) intends to be perceptually 
+uniform:</p>
+<ul>
+  <li>The transformation consists of going into the XYZ space by linearising relative to a <em>white point</em>.</li>
+  <li>The luminance channel is effectively a power curve with an exponent of \(\approx 0.43\).</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_39_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_39_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_39_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_39_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h1 id="colour-difference">Colour difference</h1>
+
+<p>A colour space is perceptually uniform if the spatial distances between two colours in that
+space perfectly match the colour difference humans perceive.</p>
+
+<h2 id="human-data">Human-data</h2>
+
+<p>Several studies have measured colour discrimination threshold and colour differences
+of human visual system. We rely on the following data:</p>
+<ol>
+  <li>MacAdam ellipses (1942)</li>
+  <li>Luo-Rigg ellipses (1986)</li>
+  <li>MacAdam colour difference (1974)</li>
+</ol>
+
+<h3 id="macadam-ellipses">MacAdam Ellipses</h3>
+<p>The idea behind MacAdam ellipses is that within each ellipse, colours are indiscriminate
+to human eyes.
+`</p>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_44_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_44_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_44_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_44_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="luo-rigg-ellipses">Luo-Rigg Ellipses</h3>
+
+<p>The idea behind Luo-Rigg ellipses is similar to MacAdam ellipses. However, contrary to the MacAdam
+Luo-Rigg ellipses have different luminance \(Y\) values.</p>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_46_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_46_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_46_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_46_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="macadam-1974">MacAdam 1974</h3>
+<p>The lines from each point towards different direction indicates the relative magnitudes of 
+colour difference.</p>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_48_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_48_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_48_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_48_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="quantifying-goodness">Quantifying goodness</h3>
+
+<ol>
+  <li>
+    <p><strong>Colour discrimination data</strong>:</p>
+
+    <p>To quantify <strong>uniformity</strong> of a colour space, we rely on standard deviation (\(\sigma\))
+ among measured sensitivity thresholds. The figure below depicts the Euclidean distance in RGB
+ colour space for a set of measured points. In a perceptually uniform colour space, all these
+ distances should have an identical length, therefore:</p>
+    <ul>
+      <li>A small standard deviation indicates greater uniformity.</li>
+      <li>A large standard deviation indicates nonuniformity.</li>
+    </ul>
+
+    <p>It is important to note that the absolute distance that determines the sensitivity does not 
+ determine the uniformity.</p>
+
+    <p>Naturally, the standard deviation depends on the absolute values. Therefore, when comparing
+ different colour spaces, we ensure the space is normalised to the range from 0 to 1.</p>
+  </li>
+  <li>
+    <p><strong>Colour difference data</strong></p>
+
+    <p>We use the correlation coefficient (\(r\)) to quantify how much a colour space predicts human
+colour difference data such as MacAdam 1974.</p>
+  </li>
+</ol>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_50_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_50_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_50_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_50_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h2 id="metrics">Metrics</h2>
+
+<p>To better explain the
+problem, we have sampled three orthogonal planes from the RGB space. Next, we will draw lines
+between all pairs of neighbouring points according to difference colour difference metrics. <strong>The
+line’s length indicates the distance between the points</strong>:</p>
+<ul>
+  <li>
+<em>Longer</em>  lines denote bigger colour differences.</li>
+  <li>
+<em>Shorter</em>  lines denote smaller colour differences.</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_52_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_52_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_52_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_52_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="euclidean-distance">Euclidean distance</h3>
+
+<p>In the figure below, we have used the Euclidean distance in RGB colour space as our 
+colour difference metric. Naturally, since sampled points were drawn from a uniform distribution 
+in RGB, the distance between all neighbouring points is identical as depicted by lines.
+However, we know that RGB does not capture the perceive colour difference.</p>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_55_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_55_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_55_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_55_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="delta-e2000">\(\Delta E2000\)</h3>
+
+<p>CIELab colour space was designed to capture the perceived colour difference better.
+Since the Euclidean distance in CIELab did not adequately resolve the perceptual uniformity 
+issue, the CIE refined their definition and introduced \(\Delta E2000\) which is widely used
+as the colour difference metric.
+The figure below depicts the \(\Delta E2000\) distance between neighbouring points.</p>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_58_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_58_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_58_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_58_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="predicting-human-data">Predicting human data</h3>
+
+<p>The figure below compares the prediction power of different colour metrics. The</p>
+<ul>
+  <li>Euclidean distance across different colour spaces (RGB, YCC, DKL, Lab) results in a similar prediction.</li>
+  <li>\(\Delta E2000\) performs better than any of the Euclidean distances.</li>
+</ul>
+
+<p>Although \(\Delta E2000\) is one of the best available colour difference metrics, it has the 
+following limitations:</p>
+<ol>
+  <li>It does not fully match the human perceptual distances.</li>
+  <li>It is not a space but a non-Euclidean distance.</li>
+</ol>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_60_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_60_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_60_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_60_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h1 id="colour-discrimination-in-deep-networks">Colour discrimination in deep networks</h1>
+
+<p>It is impossible to directly ask a neural network trained on a task like object 
+recognition about colour discrimination, as the neural network was specifically 
+trained for another task. To overcome this, we trained a linear classifier to 
+perform a 4AFC colour discrimination task, and at test time systematically
+measured the network’s sensitivity at different points. That is to say, the framework to evaluate 
+the colour discrimination thresholds in deep networks consists of two steps:</p>
+<ol>
+  <li>A network is trained on an arbitrary visual task (e.g., object recognition).
+We refer to such a network as a <strong>pretrained network</strong>.</li>
+  <li>Features extracted from the <strong>frozen</strong> pretrained network are input to a linear
+classifier trained for the colour discrimination 4AFC task. We refer to
+the trained linear classifier as a <strong>colour-discriminator</strong>.</li>
+</ol>
+
+<h2 id="training-colour-discriminator">Training colour discriminator</h2>
+
+<p>The figure below shows the schematics of our training process.</p>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepReconciliationOfCategoricalColourPerception/colour_discriminator-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepReconciliationOfCategoricalColourPerception/colour_discriminator-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepReconciliationOfCategoricalColourPerception/colour_discriminator-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepReconciliationOfCategoricalColourPerception/colour_discriminator.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<p>The process of extracting features (also known as, readouts) from a pretrained 
+network can occur at any depth of a network. We extract features from six distinct
+layers from the early to final layer:</p>
+<ul>
+  <li>Common to all architectures: <code class="language-plaintext highlighter-rouge">fc</code> for <em>ImageNet</em> (classification layer) or <code class="language-plaintext highlighter-rouge">encoder</code>
+for <em>Taskonomy</em> (the final encoding layer) and <em>CLIP</em> (the final vision layer).</li>
+  <li>In the case of <code class="language-plaintext highlighter-rouge">ResNet50</code> architecture, from 5 intermediate areas (a collection
+of residual blocks).</li>
+  <li>In the case of <code class="language-plaintext highlighter-rouge">ViT-B32</code> from blocks <code class="language-plaintext highlighter-rouge">[1, 4, 7, 10, 11]</code>.</li>
+</ul>
+
+<h3 id="train-images">Train images</h3>
+
+<p>During the training, the linear classifier is input with four images:</p>
+<ul>
+  <li>Three of those are identical.</li>
+  <li>One odd image that only differs in colour.</li>
+</ul>
+
+<p>The colour difference between common-odd images is drawn from a random uniform
+distribution ensuring no colour bias is introduced in the colour discriminator
+training.</p>
+
+<p>The background colour is always achromatic whose luminance is drawn from a random
+uniform distribution</p>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_64_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_64_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_64_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_64_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h2 id="testing-paradigm">Testing paradigm</h2>
+
+<p>To estimate networks’ colour sensitivity thresholds, we followed the standard staircase
+procedure to adjust the colour of the odd-one-out item until the network’s accuracy reached 
+\(62.5 \%\). At each trial, this accuracy is computed over 2905 shapes. The figure below 
+illustrates a real example of the staircase procedure.</p>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_66_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_66_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_66_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_66_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h2 id="pretrained-networks">Pretrained networks</h2>
+
+<p>Architectures:</p>
+<ul>
+  <li>
+<strong>Vision Transformers (ViT)</strong> – <em>ViT-B32</em>
+</li>
+  <li>
+<strong>Convolutional Neural Networks (CNN)</strong> – <em>ResNet50</em>
+</li>
+</ul>
+
+<p>Pretrained task:</p>
+<ul>
+  <li>
+<strong>CLIP</strong>: multimodal text-image matching</li>
+  <li>
+<strong>ImageNet</strong>: unimodal object classification</li>
+</ul>
+
+<p>Intermediate layers: six distinct layers corresponding to low-, mid- and high-level visual representation.</p>
+
+<h2 id="test-points">Test Points</h2>
+
+<p>We sampled the RGB space uniformly with steps of \(0.25\). This results in 125 test points, which
+are illustrated in the figure below.</p>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_71_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_71_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_71_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_71_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<p>From each test point, we computed the sensitivity towards the outer surface of the RGB cube.
+An example of this is illustrated in the figure below.</p>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_73_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_73_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_73_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_73_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h1 id="results">Results</h1>
+
+<p>For each pretrained network we trained five instances of linear classifier. The results across
+these five instances are identical, therefore in this notebook we report the results only for
+one instance.</p>
+
+<h2 id="explaining-with-one-example">Explaining with one example</h2>
+
+<p>We will look at the results of <em>Block-7</em> of the <em>ViT-B32</em> architecture (i.e.,
+the image encoder of CLIP). The directory name <code class="language-plaintext highlighter-rouge">bg128_i0</code> means the linear classifier
+(colour discriminator) has been trained with images of a grey background (\(R=G=B=127\)).</p>
+
+<h3 id="raw-sensitivity-thresholds">Raw sensitivity thresholds</h3>
+
+<p>In the figure below, we have visualised the sensitivity threshold for <strong>125 test points</strong> summing to a total of <strong>3152 comparisons</strong>. The inserts are sorted following the standard deviation in sensitivity thresholds for the test colours. In each insert, the square marker indicates the test colour whose RGB coordinates are also written in the title.
+All circles correspond to the sensitivity threshold in different directions.</p>
+
+<p>We can observe:</p>
+<ul>
+  <li>Some of the point clouds are very small while others spread.</li>
+  <li>If RGB were the perceptually uniform space for this layer, we would see equal-sized point clouds for all test points.</li>
+  <li>This nonuniformity suggests more sensitivity at certain parts of the colour space is useful for the pretrained task.</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_78_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_78_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_78_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_78_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="quantifying-uniformity">Quantifying uniformity</h3>
+
+<p>We can compute the uniformity metric (standard deviation among distances) for different colour
+spaces and colour difference metrics. Overall, we can see the values of \(\sigma\) are small across
+colour spaces:</p>
+<ul>
+  <li>Smaller standard deviation in YCC and DKL colour space in comparison to RGB suggests these colour spaces are perceptually more uniform for this layer.</li>
+  <li>\(\Delta E\) of 2.56 is slightly above JND, suggesting the network’s colour sensitivity is not far away from humans.</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_81_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_81_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_81_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_81_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h2 id="the-role-of-architecture">The role of architecture</h2>
+
+<p>Plotting the sensitivity thresholds for all 125 test points across six readout layers results in
+too big of a figure. But to showcase the differences across layers (from early- to mid- and
+deep layers) we illustrate the sensitivity thresholds for all eight corners of the RGB cube.</p>
+
+<h3 id="clip---vit-b32">CLIP - ViT-B32</h3>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_86_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_86_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_86_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_86_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_87_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_87_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_87_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_87_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="clip---resnet50">CLIP - ResNet50</h3>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_90_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_90_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_90_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_90_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_91_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_91_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_91_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_91_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="imagenet---vit-b32">ImageNet - ViT-B32</h3>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_94_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_94_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_94_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_94_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_95_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_95_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_95_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_95_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="imagenet---resnet50">ImageNet - ResNet50</h3>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_98_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_98_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_98_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_98_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_99_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_99_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_99_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_99_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="transformer-vs-convolution-networks">Transformer vs. Convolution Networks</h3>
+
+<p>The figure below compares the colour sensitivity of networks in a confusion matrix style like
+across two tasks and two architectures:</p>
+<ul>
+  <li>There is no significant difference between columns one and two, suggesting that language does not crucially impact the network’s colour sensitivity thresholds.</li>
+  <li>A large difference can be observed between the first and second rows, suggesting a strong role of the network’s architecture in the network’s colour sensitivity thresholds. <strong>Vison Transformers (ViT) obtain considerably lower \(\Delta E2000\)s, which suggests they capture human sensitivity better than  convolutional networks.</strong>
+</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_101_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_101_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_101_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_101_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h1 id="optimising-a-uniform-space">Optimising a uniform space</h1>
+
+<p>Now that we have measured a large set of sensitivity thresholds for a network/layer, we can
+use optimisation techniques to transform the input space (RGB, i.e., the input space of all
+examined pretrained networks is RGB) to a new space (we refer to it as <em>network-space</em>), where
+the standard deviation in the Euclidean distance of all measured distances equals zero
+(\(\sigma_{network-space}=0)\).</p>
+
+<p>There are at least two good candidates to perform this optimisation:</p>
+<ol>
+  <li>
+<strong>Classical minimisation</strong>: defining the type of transformation (e.g., \(3 \times 3\) matrix or affine transformation, with or without exponential factor and certain nonlinearities.</li>
+  <li>
+<strong>Neural networks</strong>: deciding a neural network (i.e., set of linear and nonlinear layers) to find the optimal solution.</li>
+</ol>
+
+<p>The benefit of the “classical minimisation” approach is that the inverse operation is given.
+However, it is limited to a design envisaged by us, therefore perhaps not finding the true
+uniform space.
+The benefit of the “neural networks” approach is its flexibility in finding an optimal solution.
+The drawback is that the inverse to RGB is not given and must be approximated.</p>
+
+<h2 id="neural-networks">Neural networks</h2>
+
+<p>We can train a simple neural network with a few hidden (intermediate) layers to transform RGB
+input space to output network-space. An example of such a network is depicted in the figure below:</p>
+<ul>
+  <li>This is not a schematic illustration and the number of nodes corresponds to a real scenario.</li>
+  <li>The neural networks trained to find the uniform colour space are shallow with a few hundred parameters.</li>
+  <li>All layers are fully-connected (also known as linear or dense layer), where all input nodes are connected to all output nodes.</li>
+  <li>Between any two dense layers, there is a nonlinear activation function.</li>
+</ul>
+
+<p>We can perform a hyperparameter search about:</p>
+<ul>
+  <li>The number of hidden layers.</li>
+  <li>The number of units in each layer.</li>
+  <li>The type of nonlinearity function at each layer.</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_104_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_104_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_104_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_104_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<h3 id="training">Training</h3>
+
+<p>We train our <em>perceptually uniform colour space network</em> (<strong>PucsNet</strong>) with following settings:</p>
+<ul>
+  <li>0.1 learning rate, which is reduced by one order of magnitude at every one-third of total epochs.</li>
+  <li>5000 epochs</li>
+  <li>At every epoch, PucsNet transfers 3152 RGB points into the new space.</li>
+  <li>The main term in the loss function is the uniformity metric (i.e., standard deviation among all measured distances). However, without any further constraint, the first solution the network finds is to make the data range tiny, which is not a valid solution. Therefore, we add a second term to our loss function to ensure the output range is approximately 0 to 1.</li>
+</ul>
+
+<h3 id="pucsnets">PucsNets</h3>
+
+<p>The optimisation explained above might end up in an infinite number of spaces all reaching the
+minimum loss function. Let us have a look at a few instances of PucsNets that we have trained and discuss the results.</p>
+
+<p>We report the network training evolution with the following figure:</p>
+<ul>
+  <li>The evolution of loss as a function of number of epochs.</li>
+  <li>The prediction of human colour discrimination ellipses (i.e., MacAdam 1942 and Luo-Rigg 1986).</li>
+  <li>The prediction of human colour difference (i.e., MacAdam 1974).</li>
+  <li>Visualisation of all RGB points into the new network-space.</li>
+</ul>
+
+<p>The instance below contains two hidden layers of each 8 units:</p>
+<ul>
+  <li>The loss function although noisy steadily drops as we progress in the number of epochs. Note that the first peak at epoch 0 is because the first solution the network finds is to shrink the space range, but afterwards, it should satisfy the second constraint that brings the range of output to the range of 0 to 1.</li>
+  <li>Network predicts human ellipses better than \(\Delta E2000\) (compare solid to dashed lines: lower values indicate more uniform space). However, it is also important to note that the prediction power of the network does not change as a function of epochs, suggesting that the initial weights make a significant impact.</li>
+  <li>Network predicts human colour differences data equally good as \(\Delta E2000\). It is important to note that PucsNet is only trained with pretrained colour discrimination thresholds, the fact that it obtains decent results in colour difference (a similar but different paradigm) suggests the newfound space is indeed capturing other aspects of human colour vision.</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_1-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_1-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_1-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_112_1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<p>The instance below contains two hidden layers of 8 and 9 units:</p>
+<ul>
+  <li>Quantitatively the obtained results are very similar to the instance above.</li>
+  <li>However, qualitatively the new space looks quite different from the instance above.</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_1-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_1-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_1-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_114_1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<p>The instance below contains three hidden layers of 7, 14 and 9 units:</p>
+<ul>
+  <li>Again we observe comparable quantitative results as above but with a different representation of colours.</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_1-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_1-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_1-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_116_1.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+<p><strong>It is important to emphasise that no human data has been used in any part of network training</strong>, therefore the fact that they predict human data equally or better than state-of-the-art \(\Delta E2000\) suggests great potential in using pretrained networks to obtain a perceptually uniform colour space. We can further explore the flexibility of training these networks to create a perceptually uniform colour space under different conditions, such as illumination and background.</p>
+
+<h1 id="discussion">Discussion</h1>
+<ul>
+  <li>Colour discrimination thresholds in pretrained networks highly resembles human sensitivity.</li>
+  <li>Network architecture is influential: in comparison to convolution networks, <strong>vision transformers</strong> explain better human data.</li>
+  <li>Artificial deep networks offer a <strong>novel framework</strong> to create a <strong>perceptually uniform colour space</strong>.</li>
+</ul>
+
+<div class="row">
+	<div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    
+    <source class="responsive-img-srcset" media="(max-width: 480px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_119_0-480.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 800px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_119_0-800.webp"></source>
+    <source class="responsive-img-srcset" media="(max-width: 1400px)" srcset="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_119_0-1400.webp"></source>
+    
+
+    <!-- Fallback to the original file -->
+    <img src="/assets/img/DeepPursuitOfPerceptuallyUniformColourSpace/output_119_0.png" class="img-fluid rounded z-depth-1" width="auto" height="auto" onerror="this.onerror=null; $('.responsive-img-srcset').remove();">
+  </picture>
+
+</figure>
+	
+    </div>
+</div>
+
+
+  </article>
+</div>
+
+          </div>
+        </div>
+        
+      
+    </div>
+
+    <!-- Footer -->    
+    <footer class="fixed-bottom">
+      <div class="container mt-0">
+        © Copyright 2025 Arash  Akbarinia. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>.
+
+      </div>
+    </footer>
+
+    <!-- JavaScripts -->
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="/assets/js/bootstrap.bundle.min.js"></script>
+  <!-- <script src="/assets/js/mdb.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    <!-- Masonry & imagesLoaded -->
+  <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+  <script defer src="/assets/js/masonry.js" type="text/javascript"></script>
+    
+  <!-- Medium Zoom JS -->
+  <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.8/dist/medium-zoom.min.js" integrity="sha256-7PhEpEWEW0XXQ0k6kQrPKwuoIomz8R8IYyuU1Qew4P8=" crossorigin="anonymous"></script>
+  <script defer src="/assets/js/zoom.js?7b30caa5023af4af8408a472dc4e1ebb"></script>
+  <!-- Sidebar Table of Contents -->
+  <script defer src="/assets/js/bootstrap-toc.min.js?c82ff4de8b0955d6ff14f5b05eed7eb6"></script>
+
+
+  <!-- Bootstrap Table -->
+  <script defer src="https://unpkg.com/bootstrap-table@1.22.1/dist/bootstrap-table.min.js"></script>
+
+  <!-- Load Common JS -->
+  <script src="/assets/js/no_defer.js?d633890033921b33e0ceb13d22340a9c"></script>
+  <script defer src="/assets/js/common.js?acdb9690d7641b2f8d40529018c71a01"></script>
+  <script defer src="/assets/js/copy_code.js?c9d9dd48933de3831b3ee5ec9c209cac" type="text/javascript"></script>
+
+    
+  <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script>
+  <script async src="https://badge.dimensions.ai/badge.js"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-F9Z86194JJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ window.dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-F9Z86194JJ');
+  </script>
+    
+
+<!-- Scrolling Progress Bar -->
+<script type="text/javascript">
+  /*
+   * This JavaScript code has been adapted from the article 
+   * https://css-tricks.com/reading-position-indicator/ authored by Pankaj Parashar, 
+   * published on the website https://css-tricks.com on the 7th of May, 2014.
+   * Couple of changes were made to the original code to make it compatible 
+   * with the `al-foio` theme.
+   */
+  const progressBar = $("#progress");
+  /*
+   * We set up the bar after all elements are done loading.
+   * In some cases, if the images in the page are larger than the intended
+   * size they'll have on the page, they'll be resized via CSS to accomodate
+   * the desired size. This mistake, however, breaks the computations as the
+   * scroll size is computed as soon as the elements finish loading.
+   * To account for this, a minimal delay was introduced before computing the
+   * values.
+   */
+  window.onload = function () {
+    setTimeout(progressBarSetup, 50);
+  };
+  /*
+   * We set up the bar according to the browser.
+   * If the browser supports the progress element we use that.
+   * Otherwise, we resize the bar thru CSS styling
+   */
+  function progressBarSetup() {
+    if ("max" in document.createElement("progress")) {
+      initializeProgressElement();
+      $(document).on("scroll", function() {
+        progressBar.attr({ value: getCurrentScrollPosition() });
+      });
+      $(window).on("resize", initializeProgressElement);
+    } else {
+      resizeProgressBar();
+      $(document).on("scroll", resizeProgressBar);
+      $(window).on("resize", resizeProgressBar);
+    }
+  }
+  /*
+   * The vertical scroll position is the same as the number of pixels that
+   * are hidden from view above the scrollable area. Thus, a value > 0 is
+   * how much the user has scrolled from the top
+   */
+  function getCurrentScrollPosition() {
+    return $(window).scrollTop();
+  }
+
+  function initializeProgressElement() {
+    let navbarHeight = $("#navbar").outerHeight(true);
+    $("body").css({ "padding-top": navbarHeight });
+    $("progress-container").css({ "padding-top": navbarHeight });
+    progressBar.css({ top: navbarHeight });
+    progressBar.attr({
+      max: getDistanceToScroll(),
+      value: getCurrentScrollPosition(),
+    });
+  }
+  /*
+   * The offset between the html document height and the browser viewport
+   * height will be greater than zero if vertical scroll is possible.
+   * This is the distance the user can scroll
+   */
+  function getDistanceToScroll() {
+    return $(document).height() - $(window).height();
+  }
+
+  function resizeProgressBar() {
+    progressBar.css({ width: getWidthPercentage() + "%" });
+  }
+  // The scroll ratio equals the percentage to resize the bar
+  function getWidthPercentage() {
+    return (getCurrentScrollPosition() / getDistanceToScroll()) * 100;
+  }
+</script>
+
+    
+  </body>
+</html>
