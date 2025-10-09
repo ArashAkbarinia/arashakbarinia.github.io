@@ -26,7 +26,7 @@
     {
       "name": "Justus-Liebig-Universität Giessen, Germany",
       "position": "Research Scientist",
-      "url": "https://example.com",
+      "url": "https://www.uni-giessen.de/en/faculties/f06/psy/departments/generalpsychology/general-psychology",
       "startDate": "2019-02-01",
       "endDate": "",
       "summary": "Exploring and interpreting deep neural networks, comparing them to human data, particularly the visual system, e.g., colour and object perception.",
@@ -37,12 +37,11 @@
   "education": [
     {
       "institution": "Universitat Autònoma de Barcelona, Spain",
-      "url": "https://www.uab.cat/",
-      "area": "Informatics",
-      "studyType": "PhD",
+      "url": "https://www.cvc.uab.es/",
+      "area": "Computational Model of Visual Perception: From Colour to Form",
+      "studyType": "PhD in Informatics",
       "startDate": "2014-10-01",
       "endDate": "2017-10-01",
-      "summary": "Computational Model of Visual Perception: From Colour to Form",
       "score": "",
       "courses": []
     }
@@ -65,11 +64,11 @@
     },
     {
       "language": "German",
-      "fluency": "vantage"
+      "fluency": "Vantage"
     },
     {
       "language": "Catalan",
-      "fluency": "vantage"
+      "fluency": "Vantage"
     }
   ],
   "interests": [],

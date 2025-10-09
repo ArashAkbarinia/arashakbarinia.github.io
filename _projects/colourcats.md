@@ -33,7 +33,7 @@ formalising a harmonious reconciliation of the universal and relative debates.
 <p align="center">
 <a href="https://github.com/ArashAkbarinia/DeepTHS"><img src="https://github.com/ArashAkbarinia/arashakbarinia.github.io/blob/master/assets/img/github_icon.png?raw=true" alt="Source Code" style="height:100px;"></a>
 <a href="https://colab.research.google.com/github/ArashAkbarinia/arashakbarinia.github.io/blob/master/notebooks/DeepReconciliationOfCategoricalColourPerception.ipynb"><img src="https://github.com/ArashAkbarinia/arashakbarinia.github.io/blob/master/assets/img/colab_icon.png?raw=true" alt="Notebook" style="height:100px;"></a>
-<a href="https://www.biorxiv.org/content/10.1101/2024.01.25.577209v1.full.pdf"><img src="https://github.com/ArashAkbarinia/arashakbarinia.github.io/blob/master/assets/img/publication_icon.png?raw=true" alt="Article" style="height:100px;"></a>
+<a href="https://doi.org/10.1016/j.neunet.2024.106758"><img src="https://github.com/ArashAkbarinia/arashakbarinia.github.io/blob/master/assets/img/publication_icon.png?raw=true" alt="Article" style="height:100px;"></a>
 </p>
 
 
