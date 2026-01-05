@@ -20,9 +20,9 @@ social: true  # includes social icons at the bottom of the page
 ---
 
 
-I am a research scientist at the 
-[Department of Psychology](https://www.uni-giessen.de/fbz/fb06/psychologie?language_sync=1),
- [Justus-Liebig Giessen University](https://www.uni-giessen.de/). 
+I am an Assistant Professor at the
+School of Computing & Communications, [Lancaster University Leipzig](https://www.lancasterleipzig.de/), and
+a Research Scientist at the Visual Cognition & Computational Neuroscience Lab, [Justus Liebig University Giessen](https://www.uni-giessen.de/).
  
 I wonder what makes us different from robots. We're intelligent biological 
 animals with an immense imaginative perceptual capability. Machines match this 
