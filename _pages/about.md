@@ -21,8 +21,8 @@ social: true  # includes social icons at the bottom of the page
 
 
 I am an Assistant Professor at the
-School of Computing & Communications, [Lancaster University Leipzig](https://www.lancasterleipzig.de/), and
-a Research Scientist at the Visual Cognition & Computational Neuroscience Lab, [Justus Liebig University Giessen](https://www.uni-giessen.de/).
+[School of Computing & Communications](https://www.lancasterleipzig.de/research/computing-communications/), Lancaster University Leipzig, and
+a Research Scientist at the [Visual Cognition & Computational Neuroscience Lab](https://www.vccnlab.org/), Justus Liebig University Giessen.
  
 I wonder what makes us different from robots. We're intelligent biological 
 animals with an immense imaginative perceptual capability. Machines match this 
